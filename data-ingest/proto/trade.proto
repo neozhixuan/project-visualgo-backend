@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option go_package = "github.com/neozhixuan/project-visualgo-backend/data-ingest/pb";
+
+// The trade data message format
+message TradeData {
+    double price = 1;
+    string symbol = 2;
+    int64 timestamp = 3;
+    double volume = 4;
+}
+
+// The service that streams trade data from server to client
+service TradeService {
+    rpc StreamTrades(TradeRequest) returns (stream TradeData);
+}
+
+// Request message for initiating the stream
+message TradeRequest {
+    string message = 1; // Example field, can be used to specify what data to stream
+}
