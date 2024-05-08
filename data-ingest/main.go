@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"net"
 	"net/http"
@@ -10,7 +11,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/joho/godotenv"
-	"github.com/neozhixuan/project-visualgo-backend/data-ingest/pb"
+	"github.com/neozhixuan/project-visualgo-backend/pb"
 	"google.golang.org/grpc"
 )
 
@@ -116,6 +117,14 @@ func main() {
 
 	go handleMessages()
 
+	lis, err := net.Listen("tcp", ":50051")
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	s := grpc.NewServer()
+	tradeDataChan := make(chan *pb.TradeData)
+	pb.RegisterTradeServiceServer(s, &server{tradeDataChan: tradeDataChan})
+
 	// Handle incoming messages from Finnhub
 	go func() {
 		for {
@@ -127,16 +136,37 @@ func main() {
 			log.Println("Data")
 			// Broadcast message to all connected frontend clients
 			broadcast <- message
+			// Parse JSON message into struct
+			var tradeDataJSON struct {
+				Data []struct {
+					C float64 `json:"c"` // Assuming "c" is a float64 value
+					P float64 `json:"p"`
+					S string  `json:"s"`
+					T int64   `json:"t"`
+					V float64 `json:"v"`
+				} `json:"data"`
+			}
+			if err := json.Unmarshal(message, &tradeDataJSON); err != nil {
+				log.Printf("Error unmarshaling trade data JSON: %v", err)
+				continue // Skip processing this message
+			}
+
+			// Convert JSON data to TradeData protobuf messages
+			for _, data := range tradeDataJSON.Data {
+				// Create TradeData protobuf message and populate fields
+				tradeData := &pb.TradeData{
+					Price:     data.P,
+					Symbol:    data.S,
+					Timestamp: data.T,
+					Volume:    data.V,
+					// Populate other fields as needed
+				}
+
+				// Send tradeData to gRPC streaming channel
+				tradeDataChan <- tradeData
+			}
 		}
 	}()
-
-	lis, err := net.Listen("tcp", ":50051")
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-	s := grpc.NewServer()
-	tradeDataChan := make(chan *pb.TradeData)
-	pb.RegisterTradeServiceServer(s, &server{tradeDataChan: tradeDataChan})
 
 	// Start frontend WebSocket server
 	http.HandleFunc("/ws", handleConnections)
