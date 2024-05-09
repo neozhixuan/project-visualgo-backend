@@ -2,17 +2,23 @@ syntax = "proto3";
 
 option go_package = "github.com/neozhixuan/project-visualgo-backend/pb";
 
-// The trade data message format
-message TradeData {
-    double price = 1;
-    string symbol = 2;
-    int64 timestamp = 3;
-    double volume = 4;
+// The kline data message format
+message KlineData {
+    string symbol = 1;       // Symbol
+    int64 openTime = 2;      // Start time of this kline
+    int64 closeTime = 3;     // End time of this kline
+    double openPrice = 4;    // Open price
+    double closePrice = 5;   // Close price
+    double highPrice = 6;    // Highest price
+    double lowPrice = 7;     // Lowest price
+    double volume = 8;       // Volume traded
+    int32 numTrades = 9;     // Number of trades
+    bool isKlineClosed = 10; // Is this kline closed?
 }
 
-// The service that streams trade data from server to client
-service TradeService {
-    rpc StreamTrades(TradeRequest) returns (stream TradeData);
+// The service that streams kline data from server to client
+service KlineService {
+    rpc StreamKlines(TradeRequest) returns (stream KlineData);
 }
 
 // Request message for initiating the stream

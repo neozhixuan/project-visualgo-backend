@@ -18,27 +18,27 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// TradeServiceClient is the client API for TradeService service.
+// KlineServiceClient is the client API for KlineService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type TradeServiceClient interface {
-	StreamTrades(ctx context.Context, in *TradeRequest, opts ...grpc.CallOption) (TradeService_StreamTradesClient, error)
+type KlineServiceClient interface {
+	StreamKlines(ctx context.Context, in *TradeRequest, opts ...grpc.CallOption) (KlineService_StreamKlinesClient, error)
 }
 
-type tradeServiceClient struct {
+type klineServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewTradeServiceClient(cc grpc.ClientConnInterface) TradeServiceClient {
-	return &tradeServiceClient{cc}
+func NewKlineServiceClient(cc grpc.ClientConnInterface) KlineServiceClient {
+	return &klineServiceClient{cc}
 }
 
-func (c *tradeServiceClient) StreamTrades(ctx context.Context, in *TradeRequest, opts ...grpc.CallOption) (TradeService_StreamTradesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &TradeService_ServiceDesc.Streams[0], "/TradeService/StreamTrades", opts...)
+func (c *klineServiceClient) StreamKlines(ctx context.Context, in *TradeRequest, opts ...grpc.CallOption) (KlineService_StreamKlinesClient, error) {
+	stream, err := c.cc.NewStream(ctx, &KlineService_ServiceDesc.Streams[0], "/KlineService/StreamKlines", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &tradeServiceStreamTradesClient{stream}
+	x := &klineServiceStreamKlinesClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -48,83 +48,83 @@ func (c *tradeServiceClient) StreamTrades(ctx context.Context, in *TradeRequest,
 	return x, nil
 }
 
-type TradeService_StreamTradesClient interface {
-	Recv() (*TradeData, error)
+type KlineService_StreamKlinesClient interface {
+	Recv() (*KlineData, error)
 	grpc.ClientStream
 }
 
-type tradeServiceStreamTradesClient struct {
+type klineServiceStreamKlinesClient struct {
 	grpc.ClientStream
 }
 
-func (x *tradeServiceStreamTradesClient) Recv() (*TradeData, error) {
-	m := new(TradeData)
+func (x *klineServiceStreamKlinesClient) Recv() (*KlineData, error) {
+	m := new(KlineData)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-// TradeServiceServer is the server API for TradeService service.
-// All implementations must embed UnimplementedTradeServiceServer
+// KlineServiceServer is the server API for KlineService service.
+// All implementations must embed UnimplementedKlineServiceServer
 // for forward compatibility
-type TradeServiceServer interface {
-	StreamTrades(*TradeRequest, TradeService_StreamTradesServer) error
-	mustEmbedUnimplementedTradeServiceServer()
+type KlineServiceServer interface {
+	StreamKlines(*TradeRequest, KlineService_StreamKlinesServer) error
+	mustEmbedUnimplementedKlineServiceServer()
 }
 
-// UnimplementedTradeServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedTradeServiceServer struct {
+// UnimplementedKlineServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedKlineServiceServer struct {
 }
 
-func (UnimplementedTradeServiceServer) StreamTrades(*TradeRequest, TradeService_StreamTradesServer) error {
-	return status.Errorf(codes.Unimplemented, "method StreamTrades not implemented")
+func (UnimplementedKlineServiceServer) StreamKlines(*TradeRequest, KlineService_StreamKlinesServer) error {
+	return status.Errorf(codes.Unimplemented, "method StreamKlines not implemented")
 }
-func (UnimplementedTradeServiceServer) mustEmbedUnimplementedTradeServiceServer() {}
+func (UnimplementedKlineServiceServer) mustEmbedUnimplementedKlineServiceServer() {}
 
-// UnsafeTradeServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to TradeServiceServer will
+// UnsafeKlineServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to KlineServiceServer will
 // result in compilation errors.
-type UnsafeTradeServiceServer interface {
-	mustEmbedUnimplementedTradeServiceServer()
+type UnsafeKlineServiceServer interface {
+	mustEmbedUnimplementedKlineServiceServer()
 }
 
-func RegisterTradeServiceServer(s grpc.ServiceRegistrar, srv TradeServiceServer) {
-	s.RegisterService(&TradeService_ServiceDesc, srv)
+func RegisterKlineServiceServer(s grpc.ServiceRegistrar, srv KlineServiceServer) {
+	s.RegisterService(&KlineService_ServiceDesc, srv)
 }
 
-func _TradeService_StreamTrades_Handler(srv interface{}, stream grpc.ServerStream) error {
+func _KlineService_StreamKlines_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(TradeRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(TradeServiceServer).StreamTrades(m, &tradeServiceStreamTradesServer{stream})
+	return srv.(KlineServiceServer).StreamKlines(m, &klineServiceStreamKlinesServer{stream})
 }
 
-type TradeService_StreamTradesServer interface {
-	Send(*TradeData) error
+type KlineService_StreamKlinesServer interface {
+	Send(*KlineData) error
 	grpc.ServerStream
 }
 
-type tradeServiceStreamTradesServer struct {
+type klineServiceStreamKlinesServer struct {
 	grpc.ServerStream
 }
 
-func (x *tradeServiceStreamTradesServer) Send(m *TradeData) error {
+func (x *klineServiceStreamKlinesServer) Send(m *KlineData) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-// TradeService_ServiceDesc is the grpc.ServiceDesc for TradeService service.
+// KlineService_ServiceDesc is the grpc.ServiceDesc for KlineService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var TradeService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "TradeService",
-	HandlerType: (*TradeServiceServer)(nil),
+var KlineService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "KlineService",
+	HandlerType: (*KlineServiceServer)(nil),
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "StreamTrades",
-			Handler:       _TradeService_StreamTrades_Handler,
+			StreamName:    "StreamKlines",
+			Handler:       _KlineService_StreamKlines_Handler,
 			ServerStreams: true,
 		},
 	},

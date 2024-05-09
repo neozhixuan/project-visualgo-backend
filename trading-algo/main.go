@@ -20,13 +20,13 @@ func main() {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	c := pb.NewTradeServiceClient(conn)
+	c := pb.NewKlineServiceClient(conn)
 
 	// Contact the server and print out its response.
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 1000*time.Second)
 	defer cancel()
 
-	stream, err := c.StreamTrades(ctx, &pb.TradeRequest{Message: "start_stream"})
+	stream, err := c.StreamKlines(ctx, &pb.TradeRequest{Message: "start_stream"})
 	if err != nil {
 		log.Fatalf("could not stream trades: %v", err)
 	}
