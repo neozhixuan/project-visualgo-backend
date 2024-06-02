@@ -38,24 +38,9 @@ func (s *server) StreamKlines(req *pb.TradeRequest, stream pb.KlineService_Strea
 	return nil
 }
 
-// // Handle incoming WebSocket messages and forward them to the gRPC stream
-// func handleWebSocketConn(ws *websocket.Conn, tradeDataChan chan *pb.TradeData) {
-// 	defer ws.Close()
-// 	for {
-// 		_, _, err := ws.ReadMessage()
-// 		if err != nil {
-// 			log.Println("WebSocket read error:", err)
-// 			break
-// 		}
-// 		// Assume message is JSON that needs to be unmarshaled into pb.TradeData
-// 		tradeData := &pb.TradeData{}
-// 		// Unmarshal message to tradeData (skipped for brevity)
-// 		tradeDataChan <- tradeData // send it to the gRPC streaming channel
-// 	}
-// }
-
 var clients = make(map[*websocket.Conn]bool) // connected clients
 var broadcast = make(chan []byte)            // broadcast channel
+
 // Helper function to safely parse price values
 func parsePrice(val interface{}) float64 {
 	if str, ok := val.(string); ok {
