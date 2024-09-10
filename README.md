@@ -8,10 +8,12 @@ and VWAP, and sends the results to a WebSocket server.
 
 ## Project Structure:
 
+```
 ├── proto/ # Contains .proto files for defining gRPC services
 ├── data-ingest/ # Fetches data from Binance, provides gRPC and WebSocket servers
 ├── trading-algo/ # Performs trading calculations (EMA, VWAP) using gRPC data, sends results via WebSocket
 └── README.md # Project documentation
+```
 
 ## Prerequisites:
 
@@ -22,11 +24,7 @@ and VWAP, and sends the results to a WebSocket server.
   - `go install github.com/gorilla/websocket`
 - Binance API keys if needed for WebSocket access
 
-## --------------------------------------------------
-
 ## Proto (protobuf folder)
-
-## --------------------------------------------------
 
 The `proto/` folder contains `.proto` files that define the gRPC services and messages.
 The `data-ingest` service acts as a gRPC server, while the `trading-algo` service is a gRPC client.
@@ -37,11 +35,7 @@ To generate Go files from the proto definitions, run the following command:
 protoc --go_out=. --go-grpc_out=. proto/service.proto
 ```
 
-## --------------------------------------------------
-
 ## Data-Ingest Service (data-ingest folder)
-
-## --------------------------------------------------
 
 The `data-ingest` service connects to the Binance WebSocket stream and ingests real-time market data.
 It exposes two services:
@@ -61,11 +55,7 @@ The `data-ingest` service:
 2. Sends this data to clients connected via gRPC on port 50051.
 3. Sends the same data via a WebSocket server running on port 8080.
 
-## --------------------------------------------------
-
 ## Trading-Algorithm Service (trading-algo folder)
-
-## --------------------------------------------------
 
 The `trading-algo` service performs trading calculations such as EMA (Exponential Moving Average) and VWAP (Volume Weighted Average Price).
 This service connects to the gRPC server running on port `50051` to receive candlestick data.
@@ -83,19 +73,15 @@ The `trading-algo` service:
 2. Calculates trading indicators (EMA and VWAP).
 3. Sends the results via WebSocket to clients connected on port 8090.
 
-## --------------------------------------------------
-
 ## Trading Calculations - EMA and VWAP
 
-## --------------------------------------------------
-
-## EMA (Exponential Moving Average):
+### EMA (Exponential Moving Average):
 
 EMA is a type of moving average that gives more weight to recent prices, making it more responsive to new information.
 In the context of this project, EMA is used to smooth out price data and to identify trends.
 The 9-period EMA is commonly used for short-term trend analysis in strategies like the rubberband strategy.
 
-## VWAP (Volume Weighted Average Price):
+### VWAP (Volume Weighted Average Price):
 
 VWAP is the average price of an asset, weighted by volume. It provides an indication of the true average price over a given period.
 VWAP is useful for assessing the "fair" price of an asset during the day.
@@ -110,11 +96,7 @@ Example:
 - When the price is stretched far above the 9-EMA but remains below VWAP, it might signal overbought conditions and a possible mean reversion trade.
 - Conversely, if the price is below the 9-EMA and VWAP, it might indicate oversold conditions.
 
-## --------------------------------------------------
-
 ## Example Workflow
-
-## --------------------------------------------------
 
 1. Start the data-ingest service:
 
@@ -135,10 +117,6 @@ go run main.go
 - Access real-time market data from the `data-ingest` service on `ws://localhost:8080/ws`.
 - Access processed trading data (EMA/VWAP) from the `trading-algo` service on `ws://localhost:8090/ws`.
 
-## --------------------------------------------------
-
 ## Conclusion
-
-## --------------------------------------------------
 
 This project demonstrates a basic setup where market data is ingested, processed with trading algorithms, and streamed via both gRPC and WebSocket servers. The EMA and VWAP calculations provide insights for executing a rubberband strategy.
