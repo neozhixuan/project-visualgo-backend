@@ -32,7 +32,9 @@ The `data-ingest` service acts as a gRPC server, while the `trading-algo` servic
 To generate Go files from the proto definitions, run the following command:
 
 ```bash
-protoc --go_out=. --go-grpc_out=. proto/service.proto
+protoc -I proto/ 
+proto/product_info.proto 
+--go_out=pb/ --go-grpc_out=pb/
 ```
 
 ## Data-Ingest Service (data-ingest folder)
