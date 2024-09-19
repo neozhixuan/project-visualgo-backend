@@ -26,10 +26,18 @@ and VWAP, and sends the results to a WebSocket server.
 
 ## Setup with Compose
 
-Create .env.local file in /frontend
+Create .env.local file in /frontend and .env in /backend/trading-algo (I have left it in for ease of use)
+
+/frontend
 
 ```bash
 NEXT_PUBLIC_STAGE=production
+```
+
+/backend/trading-algo
+
+```bash
+STAGE=production
 ```
 
 ## Proto (protobuf folder)
@@ -40,8 +48,8 @@ The `data-ingest` service acts as a gRPC server, while the `trading-algo` servic
 To generate Go files from the proto definitions, run the following command:
 
 ```bash
-protoc -I proto/ 
-proto/product_info.proto 
+protoc -I proto/
+proto/product_info.proto
 --go_out=pb/ --go-grpc_out=pb/
 ```
 
