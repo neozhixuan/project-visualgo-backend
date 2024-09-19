@@ -1,0 +1,33 @@
+services:
+  data_ingest:
+    build:
+      context: ./backend
+      # Dockerfile path in the docker-compose.yml is relative to the context path
+      dockerfile: ./data-ingest/Dockerfile
+    ports:
+      # Maps ports from the Docker container to your local machine
+      - "8080:8080"
+      - "50051:50051" # Maps port 50051 on the host to port 50051 in the container
+    environment:
+      STAGE: production
+  trading_algo:
+    build:
+      context: ./backend
+      dockerfile: ./trading-algo/Dockerfile
+    ports:
+      - "8090:8090"
+    environment:
+      STAGE: production
+    depends_on:
+      - data_ingest
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - data_ingest
+    environment:
+      NEXT_PUBLIC_STAGE: production

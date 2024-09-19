@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -10,6 +11,11 @@ import (
 
 	"github.com/neozhixuan/project-visualgo-backend/pb"
 )
+
+func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, "Server is up and running!")
+}
 
 func main() {
 	// Introduction to Goroutines
@@ -42,7 +48,7 @@ func main() {
 	// - Use a WSS Upgrader (handleConnections(r, w)) to upgrade the requests and response from HTTP to WSS
 	// -- e.g. upgrade HTTP requests, handle WSS data
 	//////////////////////////////////////////////////////////////////////////
-	go http.ListenAndServe(":8080", nil)
+
 	log.Println("WebSocket server started on port 8080...")
 
 	// Alternatively, we can listen and serve separately as well
@@ -57,7 +63,7 @@ func main() {
 	//    	log.Fatalf("Failed to serve: %v", err)
 	//    }
 
-	http.HandleFunc("/ws", websocketServer.HandleConnections)
+	go http.HandleFunc("/ws", websocketServer.HandleConnections)
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////
@@ -78,6 +84,10 @@ func main() {
 	// Start our own gRPC server on port 50051
 	// - NOTE: This cannot be a goroutine, else the application stops completely
 	//////////////////////////////////////////////////////////////////////////
-	grpcServer.StartgrpcServer(tradeDataChan)
+	go http.HandleFunc("/health", healthCheckHandler)
+
+	go grpcServer.StartgrpcServer(tradeDataChan)
+
+	log.Fatal(http.ListenAndServe("0.0.0.0:8080", nil))
 	//////////////////////////////////////////////////////////////////////////
 }

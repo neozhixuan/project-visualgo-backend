@@ -49,5 +49,6 @@ func StartWebSocketServer(ema9Channel chan []float64) {
 
 	// Start HTTP server for WebSocket connections
 	log.Println("Starting WebSocket server on port 8090")
-	http.ListenAndServe(":8090", nil)
+	http.ListenAndServe("0.0.0.0:8090", nil)
+	// log.Fatal(http.ListenAndServe("0.0.0.0:8090", nil))
 }

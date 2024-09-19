@@ -26,9 +26,11 @@ func HandleConnections(w http.ResponseWriter, r *http.Request) {
 	// Use our upgrader to upgrade the request and response into WSS
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("Failed to upgrade connection: %v", err)
+		return
 	}
-	defer ws.Close()
+
+	// defer ws.Close()
 
 	// Track our new client in our boolean map
 	clients[ws] = true

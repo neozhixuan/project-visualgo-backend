@@ -24,6 +24,14 @@ and VWAP, and sends the results to a WebSocket server.
   - `go install github.com/gorilla/websocket`
 - Binance API keys if needed for WebSocket access
 
+## Setup with Compose
+
+Create .env.local file in /frontend
+
+```bash
+NEXT_PUBLIC_STAGE=production
+```
+
 ## Proto (protobuf folder)
 
 The `proto/` folder contains `.proto` files that define the gRPC services and messages.

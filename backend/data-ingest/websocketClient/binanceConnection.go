@@ -44,7 +44,7 @@ func BinanceConnection(broadcast chan []byte, tradeDataChan chan *pb.KlineData) 
 				log.Println("Sent a message to WSS client")
 			default:
 				// Handle when no one is reading from broadcast (could log or handle differently)
-				log.Println("Warning: broadcast channel is full, dropping message")
+				// log.Println("Warning: broadcast channel is full, dropping message")
 			}
 
 			// Unmarshal our raw message into the specified structure
@@ -89,7 +89,7 @@ func BinanceConnection(broadcast chan []byte, tradeDataChan chan *pb.KlineData) 
 					// Handle when tradeDataChan is full (log or take action)
 					// the goroutine that reads from the WebSocket connection is trying to send a message through the broadcast channel, but there may not be any receiver actively pulling from this channel, causing the sending goroutine to block indefinitely.
 					// The main goroutine is likely waiting for a result from a channel that no other goroutine is writing to, leading to a deadlock.
-					log.Println("Warning: tradeDataChan is full, dropping kline data")
+					// log.Println("Warning: tradeDataChan is full, dropping kline data")
 				}
 			}
 		}

@@ -4,24 +4,43 @@ import (
 	"context"
 	"io"
 	"log"
+	"os"
 
 	pb "github.com/neozhixuan/project-visualgo-backend/pb"
 
+	"github.com/joho/godotenv"
 	"github.com/neozhixuan/project-visualgo-backend/trading-algo/financeFunctions"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 func StartGRPCClient(ema9Channel chan []float64) {
+	log.Println("Hi, trying to start gRPC client")
+	// Load .env file
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+
 	// Define a candlestick slice to store all candlesticks
 	var candlesticks []financeFunctions.Candlestick
 
+	// Production
+	stage := os.Getenv("STAGE")
+	var wssUrl = "localhost:50051"
+	if stage == "production" {
+		wssUrl = "host.docker.internal:50051"
+	}
+	log.Println("Dialing now")
+
 	// Set up a connection to the gRPC server
-	conn, err := grpc.Dial("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	conn, err := grpc.Dial(wssUrl, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
+	log.Println("Connected to gRPC server.")
 	defer conn.Close()
+	log.Println("Aftermath")
 
 	// Set up a gRPC client using the connection object
 	c := pb.NewKlineServiceClient(conn)
@@ -30,12 +49,14 @@ func StartGRPCClient(ema9Channel chan []float64) {
 	ctx := context.Background() // No timeout
 	cancel := func() {}         // No-op cancel function since there's no timeout
 	defer cancel()              // It's still good practice to call defer cancel() even if it does nothing in this case
+	log.Println("Sending message")
 
 	// Send a start_stream message to the gRPC server to request a stream of data
 	stream, err := c.StreamKlines(ctx, &pb.TradeRequest{Message: "start_stream"})
 	if err != nil {
 		log.Fatalf("could not stream trades: %v", err)
 	}
+	log.Println("Message shld be sent")
 
 	// Indefinitely read the messages from gRPC server
 	for {
