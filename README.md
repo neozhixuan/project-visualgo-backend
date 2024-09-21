@@ -28,17 +28,24 @@ and VWAP, and sends the results to a WebSocket server.
 
 Create .env.local file in /frontend and .env in /backend/trading-algo (I have left it in for ease of use)
 
-/frontend
+/frontend/.env.local
 
 ```bash
 NEXT_PUBLIC_STAGE=production
 ```
 
-/backend/trading-algo
+/backend/trading-algo/.env
 
 ```bash
 STAGE=production
 ```
+
+Start your docker engine and run this command in your terminal
+
+```bash
+docker compose up --build
+```
+
 
 ## Proto (protobuf folder)
 
